@@ -74,7 +74,7 @@ ansible-playbook -i inventory.ini playbook.yml
 
 #### 3. InSpec – Verificación de Cumplimiento y Seguridad
 
-**Ubicación en el repositorio:** `inspec/`
+**Ubicación en el repositorio:** `inspec/bastion-profile`
 
 Se utiliza InSpec para verificar que las configuraciones aplicadas por Ansible cumplen con las políticas de seguridad definidas. El perfil de InSpec incluye controles para asegurar, entre otros:
 
@@ -88,7 +88,7 @@ Se utiliza InSpec para verificar que las configuraciones aplicadas por Ansible c
 Para ejecutar los tests de InSpec contra la máquina víctima, desde el directorio raíz del proyecto:
 
 ```bash
-cd inspec/
+cd inspec/bastion-profile/
 inspec exec . -t ssh://ubuntu@192.168.50.100 --key-files ~/.ssh/id_rsa
 ```
 *(Ajustar el usuario `ubuntu` y la ruta a la clave SSH `--key-files` si es necesario. Si el puerto SSH fue cambiado por Ansible, añadir la opción `-p PUERTO_SSH`)*.
