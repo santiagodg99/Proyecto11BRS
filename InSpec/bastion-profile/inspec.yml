@@ -1,0 +1,11 @@
+name: bastion-profile
+title: Bastionado Linux Básico
+maintainer: santidg
+copyright: 2025
+license: Apache-2.0
+summary: Perfil para verificar bastionado en Ubuntu 18.04
+version: 0.1.0
+supports:
+  - platform: ubuntu
+inspec_version: ">= 4.0"
+

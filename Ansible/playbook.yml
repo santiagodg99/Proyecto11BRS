@@ -1,0 +1,71 @@
+- name: Bastionado básico de servidor Ubuntu 18.04
+  hosts: bastion
+  become: yes
+  handlers:
+    - name: enable ufw
+      ufw:
+        state: enabled
+  tasks:
+    - name: Actualizar el sistema
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Instalar paquetes necesarios
+      apt:
+        name:
+          - ufw
+          - fail2ban
+          - auditd
+        state: present
+
+    - name: Configurar UFW para permitir sólo SSH desde gestión
+      ufw:
+        rule: allow
+        port: 22
+        proto: tcp
+        from_ip: 192.168.50.101
+
+    - name: Establecer política por defecto a "deny"
+      ufw:
+        direction: incoming
+        policy: deny
+
+    - name: Habilitar UFW
+      ufw:
+        state: enabled
+
+    - name: Deshabilitar servicios innecesarios (telnet como ejemplo)
+      service:
+        name: telnet
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+
+    - name: Configurar sshd_config de forma segura
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      loop:
+        - { regexp: '^PermitRootLogin', line: 'PermitRootLogin no' }
+        - { regexp: '^PasswordAuthentication', line: 'PasswordAuthentication no' }
+        - { regexp: '^Port', line: 'Port 22' }
+
+    - name: Reiniciar el servicio SSH
+      service:
+        name: ssh
+        state: restarted
+
+    - name: Crear usuario administrador seguro
+      user:
+        name: bastionadmin
+        groups: sudo
+        shell: /bin/bash
+        create_home: yes
+
+    - name: Configurar política de contraseñas
+      lineinfile:
+        path: /etc/login.defs
+        regexp: '^PASS_MAX_DAYS'
+        line: 'PASS_MAX_DAYS 90'
